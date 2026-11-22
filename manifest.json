@@ -1,0 +1,11 @@
+{
+  "manifest_version": 3,
+  "name": "Contextual Clip",
+  "description": "Save and manage contextual clips as tasks.",
+  "version": "1.0.0",
+  "permissions": ["storage"],
+  "action": {
+    "default_title": "Tasks",
+    "default_popup": "popup.html"
+  }
+}

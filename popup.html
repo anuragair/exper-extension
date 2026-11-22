@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tasks</title>
+    <link rel="stylesheet" href="popup.css" />
+  </head>
+  <body>
+    <main class="popup" aria-labelledby="popup-title">
+      <header class="header">
+        <div>
+          <h1 id="popup-title">Tasks</h1>
+          <p id="task-count" class="subtitle" aria-live="polite">0 tasks</p>
+        </div>
+      </header>
+
+      <section id="task-list" class="task-list" aria-label="Saved tasks"></section>
+
+      <section id="empty-state" class="empty-state" aria-label="No tasks">
+        <svg class="empty-icon" width="56" height="56" viewBox="0 0 56 56" fill="none" aria-hidden="true">
+          <rect x="12.5" y="9.5" width="31" height="37" rx="7" stroke="currentColor" stroke-width="1.5" />
+          <path d="M20 21.5H36M20 28H36M20 34.5H29" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+          <path d="M38.5 42.5L45 49" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+        </svg>
+        <h2>Nothing clipped yet</h2>
+        <p>Select some text to save it as a task.</p>
+      </section>
+
+      <footer class="footer">
+        <button id="clear-all" class="clear-button" type="button" hidden>Clear All</button>
+      </footer>
+    </main>
+    <script src="popup.js"></script>
+  </body>
+</html>
