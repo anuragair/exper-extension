@@ -25,6 +25,15 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --background: #1c1c1e;
+  --card: #2c2c2e;
+  --text: #f5f5f7;
+  --secondary: #98989f;
+  --accent: #0a84ff;
+}
+
 button,
 a {
   font-family: inherit;
@@ -54,6 +63,30 @@ a {
   line-height: 26px;
   font-weight: 650;
   letter-spacing: -0.6px;
+}
+
+.theme-control {
+  position: relative;
+  margin-top: 1px;
+}
+
+.theme-control select {
+  height: 30px;
+  min-width: 82px;
+  padding: 0 24px 0 9px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 8px;
+  background: var(--card);
+  color: var(--text);
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+:root[data-theme="dark"] .theme-control select {
+  border-color: rgba(255, 255, 255, 0.09);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.18);
 }
 
 .subtitle {
@@ -167,17 +200,44 @@ a {
   border: 0;
   border-radius: 7px;
   background: transparent;
-  color: #86868b;
+  color: var(--secondary);
   cursor: pointer;
-  opacity: 0;
-  transform: scale(0.92);
+  opacity: 1;
+  transform: scale(1);
   transition: opacity 150ms var(--spring), transform 150ms var(--spring), background 150ms var(--spring);
 }
 
-.task-card:hover .delete-button,
-.task-card:focus-within .delete-button {
+.copy-button {
+  position: absolute;
+  top: 9px;
+  right: 41px;
+  display: grid;
+  width: 28px;
+  height: 28px;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  border-radius: 7px;
+  background: transparent;
+  color: var(--secondary);
+  cursor: pointer;
   opacity: 1;
   transform: scale(1);
+  transition: opacity 150ms var(--spring), transform 150ms var(--spring), background 150ms var(--spring), color 150ms var(--spring);
+}
+
+.copy-button:hover {
+  background: rgba(0, 0, 0, 0.05);
+  color: var(--text);
+}
+
+.copy-button.copied {
+  color: #248a3d;
+}
+
+.copy-button svg {
+  width: 14px;
+  height: 14px;
 }
 
 .delete-button:hover {

@@ -3,7 +3,18 @@
   "name": "Contextual Clip",
   "description": "Save and manage contextual clips as tasks.",
   "version": "1.0.0",
-  "permissions": ["storage"],
+  "permissions": ["contextMenus", "storage"],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["http://*/*", "https://*/*"],
+      "js": ["content.js"],
+      "css": ["content.css"],
+      "run_at": "document_idle"
+    }
+  ],
   "action": {
     "default_title": "Tasks",
     "default_popup": "popup.html"

@@ -2,8 +2,31 @@ const taskList = document.getElementById("task-list");
 const emptyState = document.getElementById("empty-state");
 const taskCount = document.getElementById("task-count");
 const clearAllButton = document.getElementById("clear-all");
+const themeSelect = document.getElementById("theme-select");
 
 let tasks = [];
+const systemTheme = window.matchMedia("(prefers-color-scheme: dark)");
+
+function applyTheme(theme) {
+  const resolvedTheme =
+    theme === "system" ? (systemTheme.matches ? "dark" : "light") : theme;
+  document.documentElement.dataset.theme = resolvedTheme;
+}
+
+function loadTheme() {
+  const storage = getStorageArea();
+  if (storage) {
+    storage.get(["theme"], (result) => {
+      const theme = result.theme === "light" || result.theme === "dark" ? result.theme : "system";
+      themeSelect.value = theme;
+      applyTheme(theme);
+    });
+  } else {
+    const theme = localStorage.getItem("theme") || "system";
+    themeSelect.value = theme;
+    applyTheme(theme);
+  }
+}
 
 function getStorageArea() {
   if (typeof chrome !== "undefined" && chrome.storage && chrome.storage.local) {
@@ -68,6 +91,38 @@ function createTrashIcon() {
   return svg;
 }
 
+function createCopyIcon() {
+  const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  svg.setAttribute("viewBox", "0 0 16 16");
+  svg.setAttribute("fill", "none");
+  svg.setAttribute("aria-hidden", "true");
+  svg.innerHTML =
+    '<rect x="5" y="5" width="8" height="8" rx="1.5" stroke="currentColor" stroke-width="1.25"/><path d="M10.5 5V3.5A1.5 1.5 0 0 0 9 2H3.5A1.5 1.5 0 0 0 2 3.5V9A1.5 1.5 0 0 0 3.5 10.5H5" stroke="currentColor" stroke-width="1.25" stroke-linecap="round"/>';
+  return svg;
+}
+
+async function copyTaskText(button, text) {
+  try {
+    await navigator.clipboard.writeText(text);
+  } catch {
+    const textarea = document.createElement("textarea");
+    textarea.value = text;
+    textarea.style.position = "fixed";
+    textarea.style.opacity = "0";
+    document.body.appendChild(textarea);
+    textarea.select();
+    document.execCommand("copy");
+    textarea.remove();
+  }
+
+  button.classList.add("copied");
+  button.setAttribute("aria-label", "Copied");
+  window.setTimeout(() => {
+    button.classList.remove("copied");
+    button.setAttribute("aria-label", `Copy task: ${text}`);
+  }, 1400);
+}
+
 function createTaskCard(task, index) {
   const card = document.createElement("article");
   card.className = "task-card";
@@ -91,6 +146,15 @@ function createTaskCard(task, index) {
   domain.textContent = getDomain(sourceUrl);
   source.appendChild(domain);
   card.appendChild(source);
+
+  const copyButton = document.createElement("button");
+  copyButton.className = "copy-button";
+  copyButton.type = "button";
+  copyButton.setAttribute("aria-label", `Copy task: ${task.text || "untitled"}`);
+  copyButton.title = "Copy text";
+  copyButton.appendChild(createCopyIcon());
+  copyButton.addEventListener("click", () => copyTaskText(copyButton, task.text || ""));
+  card.appendChild(copyButton);
 
   const deleteButton = document.createElement("button");
   deleteButton.className = "delete-button";
@@ -130,13 +194,35 @@ clearAllButton.addEventListener("click", () => {
   render();
 });
 
+themeSelect.addEventListener("change", () => {
+  const theme = themeSelect.value;
+  applyTheme(theme);
+  const storage = getStorageArea();
+  if (storage) {
+    storage.set({ theme });
+  } else {
+    localStorage.setItem("theme", theme);
+  }
+});
+
+systemTheme.addEventListener("change", () => {
+  if (themeSelect.value === "system") applyTheme("system");
+});
+
 if (typeof chrome !== "undefined" && chrome.storage && chrome.storage.onChanged) {
   chrome.storage.onChanged.addListener((changes, areaName) => {
-    if (areaName === "local" && Array.isArray(changes.tasks?.newValue)) {
-      tasks = changes.tasks.newValue;
-      render();
+    if (areaName === "local") {
+      if (Array.isArray(changes.tasks?.newValue)) {
+        tasks = changes.tasks.newValue;
+        render();
+      }
+      if (typeof changes.theme?.newValue === "string") {
+        themeSelect.value = changes.theme.newValue;
+        applyTheme(changes.theme.newValue);
+      }
     }
   });
 }
 
+loadTheme();
 loadTasks();
